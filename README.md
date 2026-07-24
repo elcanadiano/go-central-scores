@@ -27,7 +27,9 @@ pnpm db:migrate   # apply pending migrations
 pnpm db:status    # show applied / pending
 ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set `GOCENTRAL_API_BASE_URL` to your GoCentral REST API base (no trailing slash) so the song leaderboard proxy can reach `/leaderboards/song`.
+
+Song leaderboard UI: [http://localhost:3412/leaderboards/song](http://localhost:3412/leaderboards/song)
 
 ## Learn More
 
