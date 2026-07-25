@@ -31,6 +31,15 @@ Set `GOCENTRAL_API_BASE_URL` to your GoCentral REST API base (no trailing slash)
 
 Song leaderboard UI: [http://localhost:3412/leaderboards/song](http://localhost:3412/leaderboards/song)
 
+## Testing
+
+```bash
+pnpm test         # run Jest once
+pnpm test:watch   # watch mode
+```
+
+Jest uses `next/jest` with jsdom and Testing Library matchers (`jest.setup.ts`).
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
