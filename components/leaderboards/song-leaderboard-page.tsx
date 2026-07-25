@@ -34,8 +34,10 @@ export function SongLeaderboardPage() {
   const [, startTransition] = useTransition();
   const lastLoadedKeyRef = useRef<string | null>(null);
 
-  const urlSongId = Number(searchParams.get("song_id"));
-  const urlRoleRaw = Number(searchParams.get("role_id"));
+  const songParam = searchParams.get("song_id");
+  const roleParam = searchParams.get("role_id");
+  const urlSongId = songParam == null ? Number.NaN : Number(songParam);
+  const urlRoleRaw = roleParam == null ? Number.NaN : Number(roleParam);
   const urlRoleId = isRoleId(urlRoleRaw) ? urlRoleRaw : DEFAULT_ROLE_ID;
 
   const [selectedSong, setSelectedSong] = useState<SongSearchResult | null>(
