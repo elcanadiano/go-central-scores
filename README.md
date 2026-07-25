@@ -34,11 +34,11 @@ Song leaderboard UI: [http://localhost:3412/leaderboards/song](http://localhost:
 ## Testing
 
 ```bash
-pnpm test         # run Jest once
-pnpm test:watch   # watch mode
+pnpm test         # run Jest once with coverage
+pnpm test:watch   # watch mode (no coverage)
 ```
 
-Jest uses `next/jest` with jsdom and Testing Library matchers (`jest.setup.ts`).
+Jest uses `next/jest` with jsdom and Testing Library matchers (`jest.setup.ts`). Tests live in co-located `__tests__` directories. Coverage reports go to `coverage/` (text summary in the terminal; open `coverage/lcov-report/index.html` for the HTML report).
 
 ## Learn More
 

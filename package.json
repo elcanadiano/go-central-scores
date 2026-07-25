@@ -8,7 +8,7 @@
     "start": "next start -p 3412",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --coverage=false",
     "db:migrate": "tsx db/migrate.ts",
     "db:status": "tsx db/status.ts"
   },
