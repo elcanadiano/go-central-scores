@@ -9,22 +9,25 @@ jest.mock("next/font/google", () => ({
 
 jest.mock("@/app/globals.css", () => ({}));
 
+jest.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}));
+
 describe("app/layout", () => {
   it("exports root metadata", () => {
     expect(metadata).toEqual({
-      title: "Go Central Scores",
+      title: "GoCentralScores",
       description: "Song leaderboards and score tools for GoCentral.",
     });
   });
 
-  it("renders children inside the document shell", () => {
+  it("renders the site header and children inside the document shell", () => {
     render(
       <RootLayout>
         <div>Leaderboard child</div>
       </RootLayout>,
     );
 
-    // Root layout html/body are applied to the document, not the RTL container.
     expect(document.documentElement).toHaveAttribute("lang", "en");
     expect(document.documentElement).toHaveClass(
       "h-full",
@@ -35,7 +38,21 @@ describe("app/layout", () => {
     expect(document.documentElement.className).toContain("--font-geist-mono");
     expect(document.documentElement.className).toContain("--font-sans");
 
-    expect(document.body).toHaveClass("min-h-full", "flex", "flex-col");
-    expect(screen.getByText("Leaderboard child")).toBeInTheDocument();
+    expect(document.body).toHaveClass(
+      "min-h-full",
+      "flex",
+      "flex-col",
+      "bg-background",
+      "text-foreground",
+    );
+    expect(
+      screen.getByRole("banner"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "GoCentralScores" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("main")).toContainElement(
+      screen.getByText("Leaderboard child"),
+    );
   });
 });
