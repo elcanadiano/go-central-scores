@@ -21,7 +21,7 @@ describe("app/layout", () => {
     });
   });
 
-  it("renders the site header and children inside the document shell", () => {
+  it("renders the site header, footer, and children inside the document shell", () => {
     render(
       <RootLayout>
         <div>Leaderboard child</div>
@@ -45,14 +45,16 @@ describe("app/layout", () => {
       "bg-background",
       "text-foreground",
     );
-    expect(
-      screen.getByRole("banner"),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "GoCentralScores" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("main")).toContainElement(
       screen.getByText("Leaderboard child"),
     );
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "elcanadiano" }),
+    ).toHaveAttribute("href", "https://github.com/elcanadiano");
   });
 });
