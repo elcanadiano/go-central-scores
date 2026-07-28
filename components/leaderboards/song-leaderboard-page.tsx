@@ -182,7 +182,7 @@ export function SongLeaderboardPage() {
         </p>
       </header>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <SongSearch
           key={selectedSong?.song_id_number ?? "none"}
           selected={selectedSong}
