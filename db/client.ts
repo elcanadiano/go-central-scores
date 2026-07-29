@@ -7,7 +7,24 @@ const globalForDb = globalThis as typeof globalThis & {
   __gocentralSql?: Sql;
 };
 
+function isLocalHost(host: string): boolean {
+  return (
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "::1" ||
+    host.endsWith(".local")
+  );
+}
+
 function createSql(): Sql {
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (databaseUrl) {
+    return postgres(databaseUrl, {
+      ssl: "require",
+    });
+  }
+
   const host = process.env.PGHOST;
   const port = process.env.PGPORT;
   const user = process.env.PGUSER;
@@ -26,7 +43,7 @@ function createSql(): Sql {
 
   if (missing.length > 0) {
     throw new Error(
-      `Missing env vars: ${missing.map(([name]) => name).join(", ")}. Copy .env.example to .env and fill in credentials.`,
+      `Missing env vars: ${missing.map(([name]) => name).join(", ")} (or set DATABASE_URL). Copy .env.example to .env and fill in credentials.`,
     );
   }
 
@@ -36,6 +53,7 @@ function createSql(): Sql {
     user,
     password,
     database,
+    ssl: isLocalHost(host!) ? undefined : "require",
   });
 }
 

@@ -5,13 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3412](http://localhost:3412) with your browser to see the result.
@@ -20,14 +14,19 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ## Database
 
-This project shares the Postgres database with `gocentral-utils`. Copy `.env.example` to `.env` and fill in credentials, then:
+Copy `.env.example` to `.env`, then configure Postgres in one of two ways:
+
+1. **`DATABASE_URL`** (recommended for Neon / hosted) — a single connection string; takes precedence when set.
+2. **`PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE`** — typical for local Postgres.
+
+Remote hosts use SSL automatically. Then:
 
 ```bash
 pnpm db:migrate   # apply pending migrations
 pnpm db:status    # show applied / pending
 ```
 
-Set `GOCENTRAL_API_BASE_URL` to your GoCentral REST API base (no trailing slash) so the song leaderboard proxy can reach `/leaderboards/song`.
+This project can share the same Postgres schema/data patterns as `gocentral-utils` (including song import from that repo). Set `GOCENTRAL_API_BASE_URL` to your GoCentral REST API base (no trailing slash) so the song leaderboard proxy can reach `/leaderboards/song`.
 
 Song leaderboard UI: [http://localhost:3412/leaderboards/song](http://localhost:3412/leaderboards/song)
 
@@ -40,17 +39,23 @@ pnpm test:watch   # watch mode (no coverage)
 
 Jest uses `next/jest` with jsdom and Testing Library matchers (`jest.setup.ts`). Tests live in co-located `__tests__` directories. Coverage reports go to `coverage/` (text summary in the terminal; open `coverage/lcov-report/index.html` for the HTML report).
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create a Neon database and copy its connection string.
+2. In the Vercel project, set:
+   - `DATABASE_URL` — Neon URL (include `sslmode=require`; pooled URL is fine for the app)
+   - `GOCENTRAL_API_BASE_URL` — production GoCentral API base
+3. Build command (optional migrate-on-deploy):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   pnpm db:migrate && pnpm build
+   ```
+
+   Or keep `pnpm build` and run `pnpm db:migrate` separately against Neon when schema changes.
+4. Load song catalog with the import script from `gocentral-utils` (not during `next build`).
+
+## Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [Next.js GitHub repository](https://github.com/vercel/next.js)
