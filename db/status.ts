@@ -37,8 +37,15 @@ async function status(): Promise<void> {
   }
 }
 
-try {
-  await status();
-} finally {
-  await closeDb();
+async function main(): Promise<void> {
+  try {
+    await status();
+  } finally {
+    await closeDb();
+  }
 }
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

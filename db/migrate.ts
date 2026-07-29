@@ -61,8 +61,15 @@ async function migrate(): Promise<void> {
   }
 }
 
-try {
-  await migrate();
-} finally {
-  await closeDb();
+async function main(): Promise<void> {
+  try {
+    await migrate();
+  } finally {
+    await closeDb();
+  }
 }
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});
