@@ -33,6 +33,41 @@ describe("SongSearch", () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
+  it("searches for a numeric song id after one character", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    (global.fetch as jest.Mock).mockResolvedValue(
+      jsonResponse({ songs: [sampleSong] }),
+    );
+
+    render(<SongSearch selected={null} onSelect={jest.fn()} />);
+
+    await user.type(
+      screen.getByPlaceholderText(/Search by name, artist, album, or song ID/i),
+      "0",
+    );
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      "/api/songs/search?q=0",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+  });
+
+  it("clears the selected label on focus so a new search can start", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    render(<SongSearch selected={sampleSong} onSelect={jest.fn()} />);
+
+    const input = screen.getByPlaceholderText(
+      /Search by name, artist, album, or song ID/i,
+    );
+    expect(input).toHaveValue("The Middle — Jimmy Eat World (Bleed American)");
+
+    await user.click(input);
+    expect(input).toHaveValue("");
+  });
+
   it("searches after debounce and lets the user pick a song", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
     const onSelect = jest.fn();

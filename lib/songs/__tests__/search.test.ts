@@ -47,6 +47,18 @@ describe("searchSongs", () => {
     expect(limit).toBe(20);
   });
 
+  it("looks up zero and negative song_id_number values", async () => {
+    await searchSongs("0");
+    expect(sqlMock.mock.calls[0]?.[1]).toBe(0);
+
+    sqlMock.mockClear();
+    await searchSongs("-2138671118");
+    expect(sqlMock.mock.calls[0]?.[1]).toBe(-2138671118);
+    expect(String(sqlMock.mock.calls[0]?.[0].join("?"))).toContain(
+      "song_id_number =",
+    );
+  });
+
   it("trims digit queries before exact lookup", async () => {
     await searchSongs("  42  ");
 
@@ -60,6 +72,11 @@ describe("searchSongs", () => {
 
   it("returns an empty list for unsafe digit ids", async () => {
     await expect(searchSongs("9".repeat(20))).resolves.toEqual([]);
+    expect(sqlMock).not.toHaveBeenCalled();
+  });
+
+  it("returns an empty list for a lone minus sign", async () => {
+    await expect(searchSongs("-")).resolves.toEqual([]);
     expect(sqlMock).not.toHaveBeenCalled();
   });
 

@@ -61,7 +61,7 @@ describe("GET /api/leaderboards/song", () => {
       (await GET(request({ song_id: "abc", role_id: "2" }))).status,
     ).toBe(400);
     expect(
-      (await GET(request({ song_id: "-1", role_id: "2" }))).status,
+      (await GET(request({ song_id: "1.5", role_id: "2" }))).status,
     ).toBe(400);
     expect(
       (await GET(request({ song_id: "100", role_id: "11" }))).status,
@@ -69,6 +69,28 @@ describe("GET /api/leaderboards/song", () => {
     expect(
       (await GET(request({ song_id: "100", role_id: "2", page: "0" }))).status,
     ).toBe(400);
+  });
+
+  it("accepts zero and negative song ids", async () => {
+    (global.fetch as jest.Mock).mockImplementation(() =>
+      Promise.resolve(
+        new Response(JSON.stringify({ leaderboard: [] }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      ),
+    );
+
+    const zero = await GET(request({ song_id: "0", role_id: "2" }));
+    expect(zero.status).toBe(200);
+
+    const negative = await GET(
+      request({ song_id: "-2138671118", role_id: "2" }),
+    );
+    expect(negative.status).toBe(200);
+
+    const upstream = (global.fetch as jest.Mock).mock.calls[1][0] as URL;
+    expect(upstream.searchParams.get("song_id")).toBe("-2138671118");
   });
 
   it("returns 500 when GOCENTRAL_API_BASE_URL is unset", async () => {

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   const roleId = Number(roleIdRaw);
   const page = Number(pageRaw);
 
-  if (!Number.isInteger(songIdNumber) || songIdNumber < 0) {
+  if (!Number.isInteger(songIdNumber)) {
     return NextResponse.json({ error: "Invalid song_id" }, { status: 400 });
   }
   if (!isRoleId(roleId)) {

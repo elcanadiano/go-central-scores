@@ -109,7 +109,7 @@ export function SongLeaderboardPage() {
 
   // Hydrate song + scores from URL (skip if UI already loaded this pair)
   useEffect(() => {
-    if (!Number.isInteger(urlSongId) || urlSongId < 0) {
+    if (!Number.isInteger(urlSongId)) {
       return;
     }
 
@@ -184,7 +184,6 @@ export function SongLeaderboardPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <SongSearch
-          key={selectedSong?.song_id_number ?? "none"}
           selected={selectedSong}
           onSelect={(song) => {
             setSelectedSong(song);

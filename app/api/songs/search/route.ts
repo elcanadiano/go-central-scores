@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const songs = await searchSongs(q);
     return NextResponse.json({ songs });
   } catch (error) {
-    console.error("Song search failed:", error);
+    console.error("[api/songs/search] failed", { q, error });
     return NextResponse.json(
       { error: "Failed to search songs" },
       { status: 500 },

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { isSongIdQuery } from "@/lib/songs/song-id";
 import type { SongSearchResult } from "@/lib/songs/types";
 import { cn } from "@/lib/utils";
 
@@ -32,13 +33,22 @@ export function SongSearch({ selected, onSelect }: SongSearchProps) {
   const isShowingSelection = selectedLabel != null && query === selectedLabel;
 
   const trimmed = query.trim();
-  const digitsOnly = /^\d+$/.test(trimmed);
+  const songIdQuery = isSongIdQuery(trimmed);
   const canSearch =
     !isShowingSelection &&
-    (digitsOnly ? trimmed.length >= 1 : trimmed.length >= 2);
+    (songIdQuery ? trimmed.length >= 1 : trimmed.length >= 2);
+
+  // Keep the field in sync when the parent selection changes (e.g. URL hydrate).
+  useEffect(() => {
+    setQuery(selected ? formatSongLabel(selected) : "");
+    setResults([]);
+    setOpen(false);
+    setError(null);
+  }, [selected?.song_id_number]);
 
   useEffect(() => {
     if (!canSearch) {
+      setLoading(false);
       return;
     }
 
@@ -87,6 +97,17 @@ export function SongSearch({ selected, onSelect }: SongSearchProps) {
 
   const visibleResults = canSearch ? results : [];
 
+  function beginEditing() {
+    if (isShowingSelection) {
+      setQuery("");
+      setResults([]);
+      setOpen(false);
+      setError(null);
+    } else if (visibleResults.length > 0) {
+      setOpen(true);
+    }
+  }
+
   return (
     <div ref={containerRef} className="relative w-full max-w-xl">
       <label className="mb-1.5 block text-sm font-medium text-foreground">
@@ -98,25 +119,23 @@ export function SongSearch({ selected, onSelect }: SongSearchProps) {
         aria-expanded={open && visibleResults.length > 0}
         aria-controls={listId}
         aria-autocomplete="list"
+        autoComplete="off"
         placeholder="Search by name, artist, album, or song ID"
-        onChange={(event) => {
-          setQuery(event.target.value);
+        onValueChange={(value) => {
+          setQuery(value);
           setOpen(true);
         }}
-        onFocus={() => {
-          if (visibleResults.length > 0) setOpen(true);
-        }}
-        onClick={() => {
-          if (isShowingSelection) {
-            setQuery("");
-          }
-        }}
+        onFocus={beginEditing}
+        onClick={beginEditing}
       />
       {loading ? (
         <p className="mt-1.5 text-xs text-muted-foreground">Searching…</p>
       ) : null}
       {error ? (
         <p className="mt-1.5 text-xs text-destructive">{error}</p>
+      ) : null}
+      {open && canSearch && !loading && !error && visibleResults.length === 0 ? (
+        <p className="mt-1.5 text-xs text-muted-foreground">No songs found</p>
       ) : null}
       {open && visibleResults.length > 0 ? (
         <ul
