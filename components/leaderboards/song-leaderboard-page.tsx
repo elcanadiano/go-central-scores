@@ -12,6 +12,7 @@ import {
   type RoleId,
 } from "@/lib/gocentral/roles";
 import type { LeaderboardEntry } from "@/lib/gocentral/types";
+import type { SongCounts } from "@/lib/songs/stats";
 import type { SongSearchResult } from "@/lib/songs/types";
 
 const PAGE_SIZE = 20;
@@ -27,7 +28,11 @@ function loadKey(songId: number, roleId: RoleId): string {
   return `${songId}:${roleId}`;
 }
 
-export function SongLeaderboardPage() {
+type SongLeaderboardPageProps = {
+  songCounts: SongCounts;
+};
+
+export function SongLeaderboardPage({ songCounts }: SongLeaderboardPageProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -177,8 +182,19 @@ export function SongLeaderboardPage() {
         <p className="text-sm text-muted-foreground">Leaderboards</p>
         <h1 className="text-3xl font-semibold tracking-tight">Song scores</h1>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          Search for a song, pick a role, and browse top scores. Use Load more
-          to append the next page of results.
+          Search by song ID number, artist, or song title, pick a role, and
+          browse top scores. Use Load more to append the next page of results.
+        </p>
+        <p className="max-w-2xl text-sm text-muted-foreground">
+          There are{" "}
+          <span className="font-semibold text-foreground">
+            {songCounts.total.toLocaleString()}
+          </span>{" "}
+          songs in the database, of which there are{" "}
+          <span className="font-semibold text-foreground">
+            {songCounts.withInfo.toLocaleString()}
+          </span>{" "}
+          songs with known song information.
         </p>
       </header>
 
