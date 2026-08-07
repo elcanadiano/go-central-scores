@@ -20,4 +20,19 @@ describe("RoleSelect", () => {
 
     expect(onChange).toHaveBeenCalledWith(10);
   });
+
+  it("does not open when disabled", async () => {
+    const user = userEvent.setup();
+    const onChange = jest.fn();
+
+    render(<RoleSelect value={6} onChange={onChange} disabled />);
+
+    const combobox = screen.getByRole("combobox");
+    expect(combobox).toBeDisabled();
+    expect(combobox).toHaveTextContent("Pro Drums");
+
+    await user.click(combobox);
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
 });

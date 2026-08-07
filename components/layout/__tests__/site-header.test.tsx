@@ -24,6 +24,9 @@ describe("SiteHeader", () => {
     expect(
       screen.getByRole("link", { name: "Song leaderboard" }),
     ).toHaveAttribute("href", "/leaderboards/song");
+    expect(
+      screen.getByRole("link", { name: "Battle leaderboard" }),
+    ).toHaveAttribute("href", "/leaderboards/battle");
   });
 
   it("marks the current page in desktop nav", () => {

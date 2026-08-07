@@ -1,11 +1,11 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SongLeaderboardPage } from "@/components/leaderboards/song-leaderboard-page";
+import { BattleLeaderboardPage } from "@/components/leaderboards/battle-leaderboard-page";
 import {
   jsonResponse,
-  makeEntries,
-  sampleEntry,
-  sampleSong,
+  makeBattleEntries,
+  sampleBattleEntry,
+  sampleBattles,
 } from "@/components/leaderboards/test-utils/fixtures";
 
 const replace = jest.fn();
@@ -13,7 +13,7 @@ let searchParams = new URLSearchParams();
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
-  usePathname: () => "/leaderboards/song",
+  usePathname: () => "/leaderboards/battle",
   useSearchParams: () => searchParams,
 }));
 
@@ -31,8 +31,6 @@ jest.mock("@tanstack/react-virtual", () => ({
   }),
 }));
 
-const songCounts = { total: 93870, withInfo: 6963 };
-
 function mockFetchSequence(
   handlers: Array<(url: string) => Response | Promise<Response>>,
 ) {
@@ -47,11 +45,7 @@ function mockFetchSequence(
   });
 }
 
-function renderPage() {
-  return render(<SongLeaderboardPage songCounts={songCounts} />);
-}
-
-describe("SongLeaderboardPage", () => {
+describe("BattleLeaderboardPage", () => {
   beforeEach(() => {
     searchParams = new URLSearchParams();
     replace.mockReset();
@@ -60,95 +54,92 @@ describe("SongLeaderboardPage", () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
-  it("prompts the user to select a song", () => {
-    renderPage();
+  it("prompts the user to select a battle", () => {
+    render(<BattleLeaderboardPage battles={sampleBattles} />);
 
     expect(
-      screen.getByText("Select a song to load its leaderboard."),
+      screen.getByText("Select a battle to load its leaderboard."),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Song scores" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText(/Search by name, artist, album, or song ID/i),
+      screen.getByRole("heading", { name: "Battle scores" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Guitar")).toBeInTheDocument();
   });
 
-  it("loads scores after a song is selected", async () => {
-    jest.useFakeTimers();
-    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+  it("shows an empty message when no battles are available", () => {
+    render(<BattleLeaderboardPage battles={[]} />);
 
-    mockFetchSequence([
-      () => jsonResponse({ songs: [sampleSong] }),
-      (url) => {
-        expect(url).toContain("/api/leaderboards/song?");
-        expect(url).toContain("song_id=32768");
-        expect(url).toContain("role_id=2");
-        expect(url).toContain("page=1");
-        return jsonResponse({
-          leaderboard: [sampleEntry],
-          page: 1,
-          page_size: 20,
-        });
-      },
-    ]);
-
-    renderPage();
-
-    const songInput = screen.getByPlaceholderText(
-      /Search by name, artist, album, or song ID/i,
-    );
-    await user.type(songInput, "middle");
-    await act(async () => {
-      jest.advanceTimersByTime(300);
-    });
-
-    await user.click(
-      await screen.findByRole("button", { name: /The Middle/i }),
-    );
-
-    expect(await screen.findByText("Unnamed Band")).toBeInTheDocument();
-    expect(screen.getByText(/#32768/)).toBeInTheDocument();
-    expect(replace).toHaveBeenCalledWith(
-      "/leaderboards/song?song_id=32768&role_id=2",
-      { scroll: false },
-    );
+    expect(
+      screen.getByText("No battles are available right now."),
+    ).toBeInTheDocument();
   });
 
-  it("hydrates from song_id in the URL", async () => {
-    searchParams = new URLSearchParams("song_id=32768&role_id=10");
+  it("loads scores after a battle is selected and preselects role", async () => {
+    const user = userEvent.setup();
 
     mockFetchSequence([
       (url) => {
-        expect(url).toBe("/api/songs/search?q=32768");
-        return jsonResponse({ songs: [sampleSong] });
-      },
-      (url) => {
-        expect(url).toContain("role_id=10");
+        expect(url).toContain("/api/leaderboards/battle?");
+        expect(url).toContain("battle_id=555556");
+        expect(url).toContain("page=1");
+        expect(url).not.toContain("role_id");
         return jsonResponse({
-          leaderboard: [sampleEntry],
+          leaderboard: [sampleBattleEntry],
           page: 1,
           page_size: 20,
         });
       },
     ]);
 
-    renderPage();
+    render(<BattleLeaderboardPage battles={sampleBattles} />);
 
-    expect(await screen.findByText("Unnamed Band")).toBeInTheDocument();
-    expect(screen.getByText("The Middle")).toBeInTheDocument();
+    const comboboxes = screen.getAllByRole("combobox");
+    await user.click(comboboxes[0]);
+    await user.click(
+      await screen.findByRole("option", { name: "Pro Drums Challenge" }),
+    );
+
+    expect(await screen.findByText("Battle Champ")).toBeInTheDocument();
+    expect(screen.getByText(/#555556/)).toBeInTheDocument();
+    expect(replace).toHaveBeenCalledWith(
+      "/leaderboards/battle?battle_id=555556",
+      { scroll: false },
+    );
+
+    const roleSelect = screen.getAllByRole("combobox")[1];
+    expect(roleSelect).toHaveTextContent("Pro Drums");
+    expect(roleSelect).toBeDisabled();
+  });
+
+  it("hydrates from battle_id in the URL", async () => {
+    searchParams = new URLSearchParams("battle_id=555555");
+
+    mockFetchSequence([
+      (url) => {
+        expect(url).toContain("battle_id=555555");
+        return jsonResponse({
+          leaderboard: [sampleBattleEntry],
+          page: 1,
+          page_size: 20,
+        });
+      },
+    ]);
+
+    render(<BattleLeaderboardPage battles={sampleBattles} />);
+
+    expect(await screen.findByText("Battle Champ")).toBeInTheDocument();
+    expect(screen.getByText(/#555555/)).toBeInTheDocument();
+    expect(screen.getAllByRole("combobox")[1]).toHaveTextContent("Guitar");
   });
 
   it("appends the next page when Load more is clicked", async () => {
     const user = userEvent.setup();
-    searchParams = new URLSearchParams("song_id=32768&role_id=2");
-    const pageOne = makeEntries(20);
-    const pageTwo = makeEntries(5).map((entry, index) => ({
+    searchParams = new URLSearchParams("battle_id=555555");
+    const pageOne = makeBattleEntries(20);
+    const pageTwo = makeBattleEntries(5).map((entry, index) => ({
       ...entry,
       rank: 21 + index,
       pid: 2000 + index,
@@ -156,7 +147,6 @@ describe("SongLeaderboardPage", () => {
     }));
 
     mockFetchSequence([
-      () => jsonResponse({ songs: [sampleSong] }),
       () =>
         jsonResponse({
           leaderboard: pageOne,
@@ -173,7 +163,7 @@ describe("SongLeaderboardPage", () => {
       },
     ]);
 
-    renderPage();
+    render(<BattleLeaderboardPage battles={sampleBattles} />);
 
     expect(await screen.findByText("Player 1")).toBeInTheDocument();
     expect(screen.getByText(/Showing 20 scores/)).toBeInTheDocument();
@@ -190,14 +180,13 @@ describe("SongLeaderboardPage", () => {
   });
 
   it("shows an error when the leaderboard request fails", async () => {
-    searchParams = new URLSearchParams("song_id=32768&role_id=2");
+    searchParams = new URLSearchParams("battle_id=555555");
 
     mockFetchSequence([
-      () => jsonResponse({ songs: [sampleSong] }),
       () => jsonResponse({ error: "Failed to fetch leaderboard" }, 502),
     ]);
 
-    renderPage();
+    render(<BattleLeaderboardPage battles={sampleBattles} />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Failed to fetch leaderboard",

@@ -16,3 +16,29 @@ export type LeaderboardEntry = {
 export type LeaderboardResponse = {
   leaderboard: LeaderboardEntry[] | null;
 };
+
+export type BattleInfo = {
+  battle_id: number;
+  title: string;
+  description: string;
+  starts_at: number;
+  expires_at: number;
+  instrument: number;
+  song_ids: number[];
+};
+
+export type BattlesResponse = {
+  battles: BattleInfo[];
+};
+
+export type BattleLeaderboardEntry = {
+  pid: number;
+  name: string;
+  score: number;
+  rank: number;
+  orank: number;
+};
+
+export type BattleLeaderboardResponse = {
+  leaderboard: BattleLeaderboardEntry[] | null;
+};

@@ -1,4 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
+import { createRoot, type Root } from "react-dom/client";
 import RootLayout, { metadata } from "@/app/layout";
 
 jest.mock("next/font/google", () => ({
@@ -14,6 +15,19 @@ jest.mock("next/navigation", () => ({
 }));
 
 describe("app/layout", () => {
+  let root: Root | null = null;
+
+  afterEach(() => {
+    act(() => {
+      root?.unmount();
+    });
+    root = null;
+    document.documentElement.removeAttribute("lang");
+    document.documentElement.removeAttribute("class");
+    document.body.removeAttribute("class");
+    document.body.innerHTML = "";
+  });
+
   it("exports root metadata", () => {
     expect(metadata).toEqual({
       title: "GoCentralScores",
@@ -22,11 +36,14 @@ describe("app/layout", () => {
   });
 
   it("renders the site header, footer, and children inside the document shell", () => {
-    render(
-      <RootLayout>
-        <div>Leaderboard child</div>
-      </RootLayout>,
-    );
+    act(() => {
+      root = createRoot(document);
+      root.render(
+        <RootLayout>
+          <div>Leaderboard child</div>
+        </RootLayout>,
+      );
+    });
 
     expect(document.documentElement).toHaveAttribute("lang", "en");
     expect(document.documentElement).toHaveClass(
