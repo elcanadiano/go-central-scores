@@ -20,6 +20,12 @@ export default function Home() {
         >
           Battle leaderboard
         </Link>
+        <Link
+          href="/stats"
+          className={cn(buttonVariants({ variant: "outline" }))}
+        >
+          Stats
+        </Link>
       </div>
     </div>
   );

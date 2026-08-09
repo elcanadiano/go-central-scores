@@ -42,3 +42,16 @@ export type BattleLeaderboardEntry = {
 export type BattleLeaderboardResponse = {
   leaderboard: BattleLeaderboardEntry[] | null;
 };
+
+export type GoCentralStats = {
+  scores: number;
+  machines: number;
+  setlists: number;
+  characters: number;
+  bands: number;
+  active_gatherings: number;
+  active_gatherings_ps3?: number;
+  active_gatherings_wii?: number;
+  most_popular_song_ids: number[];
+  most_popular_song_score_counts: number[];
+};
