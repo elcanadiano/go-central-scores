@@ -1,8 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GoCentralScores
+
+This is a frontend client which displays data from
+[GoCentral](https://github.com/ihatecompvir/GoCentral), a master server reimplementation for Rock Band 3. It aims to
+use GoCentral's API to display leaderboards and statistics of song information using a modern Next.js client.
+
+Inspired by former, similar websites such as RockBandStats.com, RockBandScores.com, or rb4scores.com.
 
 ## Getting Started
 
-First, run the development server:
+First, clone this repo.
+
+Then, set up a PostgreSQL database. You can set one up locally or use a remotely-hosted one (see Database section
+below).
+
+Then, copy `.env.example` to `.env` and configure the environment variables accordingly.
+
+Then, install the packages.
+
+```bash
+pnpm install
+```
+
+Then, you can run the app. This repository defaults to PORT 3412.
 
 ```bash
 pnpm dev
@@ -14,48 +33,39 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ## Database
 
-Copy `.env.example` to `.env`, then configure Postgres in one of two ways:
+GoCentral does not actually store information for songs, only numeric song IDs. As a result, we are on our own. To solve
+for this, GoCentralScores uses a PostgreSQL database containing a `songs` table which contains basic song information.
 
-1. **`DATABASE_URL`** (recommended for Neon / hosted) — a single connection string; takes precedence when set.
-2. **`PGHOST` / `PGPORT` / `PGUSER` / `PGPASSWORD` / `PGDATABASE`** — typical for local Postgres.
+In order to load songs into the database, there exists some scripts in
+[GoCentralUtils](https://github.com/elcanadiano/go-central-utils) which allow you to load songs into your PostgreSQL
+database.
 
-Remote hosts use SSL automatically. Then:
+This repository supports connecting to PostgreSQL using two ways:
+
+1. `DATABASE_URL` (recommended for Neon / hosted) — a single connection string; takes precedence when set.
+2. `PGHOST` **/** `PGPORT` **/** `PGUSER` **/** `PGPASSWORD` **/** `PGDATABASE` — typical for local Postgres.
+
+You can run the migration and status using the following commands.
 
 ```bash
 pnpm db:migrate   # apply pending migrations
 pnpm db:status    # show applied / pending
 ```
 
-This project can share the same Postgres schema/data patterns as `gocentral-utils` (including song import from that repo). Set `GOCENTRAL_API_BASE_URL` to your GoCentral REST API base (no trailing slash) so the song leaderboard proxy can reach `/leaderboards/song`.
-
-Song leaderboard UI: [http://localhost:3412/leaderboards/song](http://localhost:3412/leaderboards/song)
+Both this project and GoCentralUtils contain migration data. This is so that we can ensure a GoCentralScores deployment
+correctly updates the database. As a result, both GoCentralScores and GoCentralUtils must ensure that the migration
+files are in lockstep.
 
 ## Testing
+
+This repository uses [Jest](https://github.com/jestjs/jest) for testing purposes.
 
 ```bash
 pnpm test         # run Jest once with coverage
 pnpm test:watch   # watch mode (no coverage)
 ```
 
-Jest uses `next/jest` with jsdom and Testing Library matchers (`jest.setup.ts`). Tests live in co-located `__tests__` directories. Coverage reports go to `coverage/` (text summary in the terminal; open `coverage/lcov-report/index.html` for the HTML report).
+## Acknowledgements
 
-## Deploy on Vercel
-
-1. Create a Neon database and copy its connection string.
-2. In the Vercel project, set:
-   - `DATABASE_URL` — Neon URL (include `sslmode=require`; pooled URL is fine for the app)
-   - `GOCENTRAL_API_BASE_URL` — production GoCentral API base
-3. Build command (optional migrate-on-deploy):
-
-   ```bash
-   pnpm db:migrate && pnpm build
-   ```
-
-   Or keep `pnpm build` and run `pnpm db:migrate` separately against Neon when schema changes.
-4. Load song catalog with the import script from `gocentral-utils` (not during `next build`).
-
-## Learn More
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Learn Next.js](https://nextjs.org/learn)
-- [Next.js GitHub repository](https://github.com/vercel/next.js)
+This project itself is not affiliated with GoCentral but I would like to acknowledge @ihatecompvir, @jnackmclain, and
+bookreader52 for their help with this project or information about songs as a whole.
