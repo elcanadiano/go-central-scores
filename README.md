@@ -65,6 +65,13 @@ pnpm test         # run Jest once with coverage
 pnpm test:watch   # watch mode (no coverage)
 ```
 
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+If you fork or deploy your own version, preserving the license notice is required. A link back to this repository is
+appreciated.
+
 ## Acknowledgements
 
 This project itself is not affiliated with GoCentral but I would like to acknowledge @ihatecompvir, @jnackmclain, and
