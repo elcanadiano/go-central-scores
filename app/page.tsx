@@ -7,8 +7,8 @@ export default function Home() {
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-6 px-6 py-16">
       <h1 className="text-3xl font-semibold tracking-tight">GoCentralScores</h1>
       <p className="max-w-xl text-muted-foreground">
-        Browse song and battle leaderboards from GoCentral with searchable song
-        selection, battle dropdowns, and role filters.
+        A love letter to Rock Band websites of old, such as Rock Band Stats, Rock Band Scores, or
+        rb4scores.com, but now for GoCentral. Browse through Song and Battle Leaderboards.
       </p>
       <div className="flex flex-wrap gap-3">
         <Link href="/leaderboards/song" className={cn(buttonVariants())}>
