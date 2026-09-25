@@ -43,6 +43,17 @@ export type BattleLeaderboardResponse = {
   leaderboard: BattleLeaderboardEntry[] | null;
 };
 
+export type RoleRankEntry = {
+  pid: number;
+  name: string;
+  total_score: number;
+  rank: number;
+};
+
+export type RoleRankResponse = {
+  leaderboard: RoleRankEntry[] | null;
+};
+
 export type GoCentralStats = {
   scores: number;
   machines: number;
