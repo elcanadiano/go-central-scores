@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { RoleRankEntry } from "@/lib/gocentral/types";
 
@@ -8,9 +9,17 @@ const ROW_HEIGHT = 44;
 
 type RoleRankTableProps = {
   entries: RoleRankEntry[];
+  rb3Only: boolean;
 };
 
-export function RoleRankTable({ entries }: RoleRankTableProps) {
+function myRankingsHref(pid: number, rb3Only: boolean): string {
+  const params = new URLSearchParams();
+  params.set("pid", String(pid));
+  params.set("rb3_only", rb3Only ? "1" : "0");
+  return `/role-ranks?${params.toString()}`;
+}
+
+export function RoleRankTable({ entries, rb3Only }: RoleRankTableProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
@@ -48,10 +57,10 @@ export function RoleRankTable({ entries }: RoleRankTableProps) {
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const entry = entries[virtualRow.index];
             return (
-              <div
+              <Link
                 key={entry.pid + "-" + entry.rank}
-                role="row"
-                className="absolute left-0 grid w-full grid-cols-[4rem_minmax(0,1.4fr)_8rem] gap-2 border-b border-border/60 px-3 text-sm last:border-b-0"
+                href={myRankingsHref(entry.pid, rb3Only)}
+                className="absolute left-0 grid w-full grid-cols-[4rem_minmax(0,1.4fr)_8rem] gap-2 border-b border-border/60 px-3 text-sm text-foreground no-underline transition-colors outline-none last:border-b-0 hover:bg-muted/70 focus-visible:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
                 style={{
                   height: `${virtualRow.size}px`,
                   transform: `translateY(${virtualRow.start}px)`,
@@ -66,7 +75,7 @@ export function RoleRankTable({ entries }: RoleRankTableProps) {
                 <span className="flex items-center justify-end tabular-nums">
                   {entry.total_score.toLocaleString()}
                 </span>
-              </div>
+              </Link>
             );
           })}
         </div>

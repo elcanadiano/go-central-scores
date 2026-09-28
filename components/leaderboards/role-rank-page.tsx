@@ -298,7 +298,7 @@ export function RoleRankPage() {
         <p className="text-sm text-muted-foreground">Loading scores…</p>
       ) : (
         <div className="space-y-4">
-          <RoleRankTable entries={entries} />
+          <RoleRankTable entries={entries} rb3Only={rb3Only} />
           <div className="flex flex-wrap gap-3">
             {earliestPage > 1 ? (
               <Button
