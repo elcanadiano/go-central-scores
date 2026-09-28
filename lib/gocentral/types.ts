@@ -54,6 +54,26 @@ export type RoleRankResponse = {
   leaderboard: RoleRankEntry[] | null;
 };
 
+export type PlayerRoleRanksUser = {
+  pid: number;
+  username: string;
+};
+
+export type UserSearchResult = PlayerRoleRanksUser;
+
+export type PlayerRoleRank = {
+  role_id: number;
+  total_score: number;
+  total_rank: number;
+  rb3_score: number;
+  rb3_rank: number;
+};
+
+export type PlayerRoleRanks = {
+  user: PlayerRoleRanksUser;
+  rankings: PlayerRoleRank[];
+};
+
 export type GoCentralStats = {
   scores: number;
   machines: number;

@@ -27,6 +27,10 @@ describe("SiteHeader", () => {
     expect(
       screen.getByRole("link", { name: "Battle leaderboard" }),
     ).toHaveAttribute("href", "/leaderboards/battle");
+    expect(screen.getByRole("link", { name: "My rankings" })).toHaveAttribute(
+      "href",
+      "/role-ranks",
+    );
     expect(screen.getByRole("link", { name: "Role leaderboard" })).toHaveAttribute(
       "href",
       "/leaderboards/role-rank",
