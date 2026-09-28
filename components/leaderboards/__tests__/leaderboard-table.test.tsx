@@ -29,7 +29,10 @@ describe("LeaderboardTable", () => {
     render(<LeaderboardTable entries={[sampleEntry]} />);
 
     expect(screen.getByText("Rank")).toBeInTheDocument();
-    expect(screen.getByText("Unnamed Band")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Unnamed Band/ })).toHaveAttribute(
+      "href",
+      "/role-ranks?pid=3850",
+    );
     expect(screen.getByText("2,488,149")).toBeInTheDocument();
     expect(screen.getByText("6")).toBeInTheDocument();
     expect(screen.getByText("100%")).toBeInTheDocument();

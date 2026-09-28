@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { BattleLeaderboardEntry } from "@/lib/gocentral/types";
 
@@ -50,10 +51,10 @@ export function BattleLeaderboardTable({
           {virtualizer.getVirtualItems().map((virtualRow) => {
             const entry = entries[virtualRow.index];
             return (
-              <div
+              <Link
                 key={entry.pid + "-" + entry.rank}
-                role="row"
-                className="absolute left-0 grid w-full grid-cols-[4rem_minmax(0,1.4fr)_6.5rem] gap-2 border-b border-border/60 px-3 text-sm last:border-b-0"
+                href={`/role-ranks?pid=${entry.pid}`}
+                className="absolute left-0 grid w-full grid-cols-[4rem_minmax(0,1.4fr)_6.5rem] gap-2 border-b border-border/60 px-3 text-sm text-foreground no-underline transition-colors outline-none last:border-b-0 hover:bg-muted/70 focus-visible:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
                 style={{
                   height: `${virtualRow.size}px`,
                   transform: `translateY(${virtualRow.start}px)`,
@@ -68,7 +69,7 @@ export function BattleLeaderboardTable({
                 <span className="flex items-center justify-end tabular-nums">
                   {entry.score.toLocaleString()}
                 </span>
-              </div>
+              </Link>
             );
           })}
         </div>
