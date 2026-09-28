@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Switch } from "@/components/ui/switch";
 import { UserSearch } from "@/components/leaderboards/user-search";
@@ -16,6 +17,14 @@ type RoleRanksApiResponse = {
   rankings: PlayerRoleRank[];
   error?: string;
 };
+
+function roleRankHref(roleId: number, rb3Only: boolean, pid: number): string {
+  const params = new URLSearchParams();
+  params.set("role_id", String(roleId));
+  params.set("rb3_only", rb3Only ? "1" : "0");
+  params.set("pid", String(pid));
+  return `/leaderboards/role-rank?${params.toString()}`;
+}
 
 export function MyRankingsPage() {
   const router = useRouter();
@@ -153,16 +162,17 @@ export function MyRankingsPage() {
                 const score = rb3Only ? row.rb3_score : row.total_score;
                 const rank = rb3Only ? row.rb3_rank : row.total_rank;
                 return (
-                  <div
+                  <Link
                     key={row.role_id}
-                    className="grid grid-cols-[minmax(0,1.4fr)_8rem_5rem] gap-2 border-b border-border/60 px-3 py-2 text-sm last:border-b-0"
+                    href={roleRankHref(row.role_id, rb3Only, selectedUser.pid)}
+                    className="grid grid-cols-[minmax(0,1.4fr)_8rem_5rem] gap-2 border-b border-border/60 px-3 py-2 text-sm text-foreground no-underline transition-colors outline-none last:border-b-0 hover:bg-muted/70 focus-visible:bg-muted/70 focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:ring-inset"
                   >
                     <span className="font-medium">{roleLabel(row.role_id)}</span>
                     <span className="text-right tabular-nums">
                       {score.toLocaleString()}
                     </span>
                     <span className="text-right tabular-nums">{rank}</span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

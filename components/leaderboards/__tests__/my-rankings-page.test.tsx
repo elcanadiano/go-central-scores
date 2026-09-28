@@ -78,9 +78,15 @@ describe("MyRankingsPage", () => {
     const summary = await screen.findByText(/Showing all rankings for/);
     expect(summary).toHaveTextContent("Showing all rankings for elcanadiano");
     expect(summary.querySelector("span")).toHaveClass("font-semibold");
-    expect(await screen.findByText("Guitar")).toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: /Guitar/ })).toHaveAttribute(
+      "href",
+      "/leaderboards/role-rank?role_id=2&rb3_only=0&pid=886100",
+    );
     expect(screen.getByText("300")).toBeInTheDocument();
-    expect(screen.getByText("Drums")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Drums/ })).toHaveAttribute(
+      "href",
+      "/leaderboards/role-rank?role_id=0&rb3_only=0&pid=886100",
+    );
     expect(replace).toHaveBeenCalledWith(
       "/role-ranks?pid=886100&rb3_only=0",
       { scroll: false },
@@ -94,14 +100,21 @@ describe("MyRankingsPage", () => {
 
     render(<MyRankingsPage />);
     expect(await screen.findByText("300")).toBeInTheDocument();
-    expect(screen.getByText("Drums")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Drums/ })).toHaveAttribute(
+      "href",
+      "/leaderboards/role-rank?role_id=0&rb3_only=0&pid=886100",
+    );
 
     await user.click(
       screen.getByRole("switch", { name: "On-disc RB3 songs only" }),
     );
 
     expect(screen.getByText("100")).toBeInTheDocument();
-    expect(screen.queryByText("Drums")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Drums/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Guitar/ })).toHaveAttribute(
+      "href",
+      "/leaderboards/role-rank?role_id=2&rb3_only=1&pid=886100",
+    );
     expect(global.fetch).toHaveBeenCalledTimes(1);
     expect(String((global.fetch as jest.Mock).mock.calls[0][0])).toBe(
       "/api/role-ranks?pid=886100",
