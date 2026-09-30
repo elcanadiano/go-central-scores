@@ -34,7 +34,10 @@ describe("BattleLeaderboardTable", () => {
     expect(screen.getByText("Rank")).toBeInTheDocument();
     expect(screen.getByText("Player")).toBeInTheDocument();
     expect(screen.getByText("Score")).toBeInTheDocument();
-    expect(screen.getByText("Battle Champ")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Battle Champ/ })).toHaveAttribute(
+      "href",
+      "/role-ranks?pid=3850",
+    );
     expect(screen.getByText("50,000")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.queryByText("Stars")).not.toBeInTheDocument();

@@ -21,6 +21,18 @@ export default function Home() {
           Battle leaderboard
         </Link>
         <Link
+          href="/leaderboards/role-rank"
+          className={cn(buttonVariants({ variant: "outline" }))}
+        >
+          Role leaderboard
+        </Link>
+        <Link
+          href="/role-ranks"
+          className={cn(buttonVariants({ variant: "outline" }))}
+        >
+          My rankings
+        </Link>
+        <Link
           href="/stats"
           className={cn(buttonVariants({ variant: "outline" }))}
         >
