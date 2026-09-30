@@ -49,4 +49,19 @@ describe("UserSearch", () => {
     await user.click(await screen.findByRole("button", { name: "elcanadiano" }));
     expect(onSelect).toHaveBeenCalledWith(sampleUser);
   });
+
+  it("keeps search status out of the layout flow", async () => {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    (global.fetch as jest.Mock).mockResolvedValue(jsonResponse({ users: [] }));
+
+    render(<UserSearch selected={null} onSelect={jest.fn()} />);
+    await user.type(screen.getByPlaceholderText("Search by name"), "el");
+    await act(async () => {
+      jest.advanceTimersByTime(300);
+    });
+
+    expect(await screen.findByText("No players found")).toHaveClass(
+      "sm:absolute",
+    );
+  });
 });

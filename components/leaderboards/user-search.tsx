@@ -113,13 +113,19 @@ export function UserSearch({ selected, onSelect }: UserSearchProps) {
         onClick={beginEditing}
       />
       {loading ? (
-        <p className="mt-1.5 text-xs text-muted-foreground">Searching…</p>
+        <p className="mt-1.5 text-xs text-muted-foreground sm:absolute sm:top-full sm:left-0">
+          Searching…
+        </p>
       ) : null}
       {error ? (
-        <p className="mt-1.5 text-xs text-destructive">{error}</p>
+        <p className="mt-1.5 text-xs text-destructive sm:absolute sm:top-full sm:left-0">
+          {error}
+        </p>
       ) : null}
       {open && canSearch && !loading && !error && visibleResults.length === 0 ? (
-        <p className="mt-1.5 text-xs text-muted-foreground">No players found</p>
+        <p className="mt-1.5 text-xs text-muted-foreground sm:absolute sm:top-full sm:left-0">
+          No players found
+        </p>
       ) : null}
       {open && visibleResults.length > 0 ? (
         <ul
